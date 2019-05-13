@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+$stdout.sync = true
+require 'awesome_print'
+require_relative '../lib/schedule/runner'
+
+runner = Schedule::Runner.new()
+runner.run
+
