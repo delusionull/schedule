@@ -10,7 +10,7 @@ module Schedule
     end
 
     def exists?
-      check_exists(@so.so_num)
+      check_exists(@so.so_num.to_s)
     end
 
     def warn_exists
@@ -45,13 +45,11 @@ module Schedule
     end
 
     def push_to_shazam(so)
-      #puts "before schedule_so push_to_shazam: #{Time.now}"
       shaz_insert_header(so.so_num, so.ship_to_name, so.customer_po_num,
                          so.requested_ship_date, so.customer_num, so.address1,
                          so.address2, so.city, so.state, so.zipcode)
       @job_id = job_id
       so.layup_lines.lines.each do |ln|
-      #puts "schedule_so push_to_shazam layup_lines.each start: #{Time.now}"
         shaz_size = Schedule::Constants::SIZE[ln.size][:shazam]
         shaz_comp, shaz_exclude = 0, 0
         shaz_comment = ln.line_num.to_s + ln.face.instructions + ln.core.instructions  # add instructions for fire rated glue, etc
@@ -63,22 +61,18 @@ module Schedule
                   else
                     'NULL'
                   end
-        #lu_date = "\##{Schedule::Utils.shift_business_day(Time.now, 2).strftime("%F")}\#"
         lu_date = "\##{Schedule::Utils.shift_business_day(so.requested_ship_date, -1).strftime("%F")}\#"
 
-      #puts "schedule_so push_to_shazam before insert detail: #{Time.now}"
         shaz_insert_detail(@job_id, shaz_size, ln.qty, ln.face.code, ln.thick,
                            ln.core.codes*' + ', ln.back.code, shaz_comment, shaz_line,
                            ln.face.po.number, ln.back.po.number, po_date, lu_date,
                            shaz_comp, shaz_exclude, ln.face.bin, ln.back.bin,
                            ln.wo_num, ln.wt_num, ln.face.desc1, ln.face.desc2,
                            ln.back.desc1, ln.back.desc2, ln.part_num, ln.desc1,
-                           ln.desc2, ln.face.prodcat, ln.back.prodcat, ln.fg_weight,
-                           ln.face_weight, ln.back_weight, ln.core_weight)
-      #puts "schedule_so push_to_shazam after insert detail: #{Time.now}"
+                           ln.desc2, ln.face.prodcat, ln.back.prodcat, ln.weight,
+                           ln.face.weight, ln.back.weight, ln.core.weight)
         update_notes(ln.wo_num)
       end
-      #puts "after schedule_so push_to_shazam: #{Time.now}"
     end
 
     def update_notes(wo_num)

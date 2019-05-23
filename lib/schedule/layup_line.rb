@@ -55,43 +55,19 @@ module Schedule
       Back.new(@lines, @panel_config)
     end
 
-    def fg_weight
-      weight(@part_num)
-    end
-
-    def face_weight
-      weight(face.code)
-    end
-
-    def back_weight
-      weight(back.code)
-    end
-
-    def core_weight
-      core.codes.sum{|code| weight(code)}
+    def weight
+      @lines[0][:fg_weight].to_i
     end
 
     def desc1
-      material ? material[:prod_desc1].gsub(/[^\w ]/, '') : ''
+      @lines[0][:fg_desc1]
     end
 
     def desc2
-      material ? material[:prod_desc2].gsub(/[^\w ]/, '') : ''
+      @lines[0][:fg_desc2]
     end
 
     private
-
-    def weight(prod)
-      Schedule::DBs::DB_INFOR
-        .fetch(Schedule::Queries::PROD_QRY_STR, prod)
-        .first[:prod_weight].to_i
-    end
-
-    def material
-        #puts "before layup_line material: #{Time.now}"
-      Schedule::DBs::DB_INFOR.fetch(Schedule::Queries::PROD_QRY_STR, @part_num).first
-        #puts "after layup_line material: #{Time.now}"
-    end
 
     def panel_config
       PanelConfig.new(@lines, @pn_info)

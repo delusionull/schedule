@@ -1,6 +1,6 @@
 module Schedule
   class Queries
-    SO_QRY_STR = <<~EOS
+    ALL_SOS = <<~EOS
     SELECT
       CAST(pro2dw.oeel.orderno AS INT)    AS sales_order,
       CAST(pro2dw.oeel.ordersuf AS INT)   AS suffix,
@@ -32,7 +32,26 @@ module Schedule
            pro2dw.oeeh.shiptoaddr##2      AS address2,
            pro2dw.oeeh.shiptocity         AS city,
            pro2dw.oeeh.shiptost           AS state,
-           pro2dw.oeeh.shiptozip          AS zip
+           pro2dw.oeeh.shiptozip          AS zip,
+           pro2dw.com.noteln##1           AS ord_line_comment,
+      NVL(TRIM(pro2dw.icsw.binloc1),'--') AS prod_bin,
+           pro2dw.icsw.binloc2            AS prod_detail,
+           pro2dw.icsw.qtyonhand          AS prod_qty_on_hand,
+           pro2dw.icsp.weight             AS prod_weight,
+           pro2dw.icsp.descrip##1         AS prod_desc1,
+           pro2dw.icsp.descrip##2         AS prod_desc2,
+           (SELECT pro2dw.icsp.weight
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_weight,
+           (SELECT pro2dw.icsp.descrip##1
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_desc1,
+           (SELECT pro2dw.icsp.descrip##2
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_desc2
     FROM
       pro2dw.kpet
       INNER JOIN pro2dw.oeel  ON pro2dw.kpet.orderaltno = pro2dw.oeel.orderno
@@ -45,13 +64,19 @@ module Schedule
       INNER JOIN pro2dw.oeeh  ON pro2dw.kpet.orderaltno = pro2dw.oeeh.orderno
                              AND pro2dw.kpet.orderaltsuf = pro2dw.oeeh.ordersuf
                              AND pro2dw.kpet.cono = pro2dw.oeeh.cono
-      INNER JOIN pro2dw.oeelk ON pro2dw.oeelk.cono = pro2dw.kpet.cono
-                             AND pro2dw.oeelk.orderno = pro2dw.kpet.wono
+      INNER JOIN pro2dw.oeelk ON pro2dw.kpet.cono = pro2dw.oeelk.cono
+                             AND pro2dw.kpet.wono = pro2dw.oeelk.orderno
+      LEFT JOIN pro2dw.com   ON pro2dw.oeel.orderno = pro2dw.com.orderno
+                             AND pro2dw.oeel.ordersuf = pro2dw.com.ordersuf
+                             AND pro2dw.oeel.lineno_ = pro2dw.com.lineno_
+      INNER JOIN pro2dw.icsp  ON UPPER(pro2dw.oeelk.shipprod) = UPPER(pro2dw.icsp.prod)
+      INNER JOIN pro2dw.icsw  ON pro2dw.icsp.cono = pro2dw.icsw.cono
+                             AND UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.icsw.prod)
     WHERE
      ( pro2dw.oeeh.stagecd in (1, 2)
        AND pro2dw.kpet.whse LIKE 'DAL'
        AND UPPER(pro2dw.kpet.ordertype) LIKE 'O'
-       AND pro2dw.oeeh.orderno LIKE ? )
+       AND pro2dw.icsw.whse = 'DAL' )
     UNION
     (SELECT
       CAST(pro2dw.oeel.orderno AS INT)    AS sales_order,
@@ -84,7 +109,26 @@ module Schedule
            pro2dw.oeeh.shiptoaddr##2      AS address2,
            pro2dw.oeeh.shiptocity         AS city,
            pro2dw.oeeh.shiptost           AS state,
-           pro2dw.oeeh.shiptozip          AS zip
+           pro2dw.oeeh.shiptozip          AS zip,
+           pro2dw.com.noteln##1           AS ord_line_comment,
+      NVL(TRIM(pro2dw.icsw.binloc1),'--') AS prod_bin,
+           pro2dw.icsw.binloc2            AS prod_detail,
+           pro2dw.icsw.qtyonhand          AS prod_qty_on_hand,
+           pro2dw.icsp.weight             AS prod_weight,
+           pro2dw.icsp.descrip##1         AS prod_desc1,
+           pro2dw.icsp.descrip##2         AS prod_desc2,
+           (SELECT pro2dw.icsp.weight
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_weight,
+           (SELECT pro2dw.icsp.descrip##1
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_desc1,
+           (SELECT pro2dw.icsp.descrip##2
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_desc2
     FROM
       pro2dw.kpet
       INNER JOIN pro2dw.wtel  ON pro2dw.kpet.cono = pro2dw.wtel.cono
@@ -101,18 +145,73 @@ module Schedule
       INNER JOIN pro2dw.oeeh  ON pro2dw.oeel.cono = pro2dw.oeeh.cono
                              AND pro2dw.oeel.orderno = pro2dw.oeeh.orderno
                              AND pro2dw.oeel.ordersuf = pro2dw.oeeh.ordersuf
-      INNER JOIN pro2dw.oeelk ON pro2dw.oeelk.cono = pro2dw.kpet.cono
-                             AND pro2dw.oeelk.orderno = pro2dw.kpet.wono
+      INNER JOIN pro2dw.oeelk ON pro2dw.kpet.cono = pro2dw.oeelk.cono
+                             AND pro2dw.kpet.wono = pro2dw.oeelk.orderno
+      LEFT JOIN pro2dw.com   ON pro2dw.oeel.orderno = pro2dw.com.orderno
+                             AND pro2dw.oeel.ordersuf = pro2dw.com.ordersuf
+                             AND pro2dw.oeel.lineno_ = pro2dw.com.lineno_
+      INNER JOIN pro2dw.icsp  ON UPPER(pro2dw.oeelk.shipprod) = UPPER(pro2dw.icsp.prod)
+      INNER JOIN pro2dw.icsw  ON pro2dw.icsp.cono = pro2dw.icsw.cono
+                             AND UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.icsw.prod)
     WHERE
      ( pro2dw.oeeh.stagecd in (1, 2)
        AND pro2dw.kpet.whse LIKE 'DAL'
        AND UPPER(pro2dw.kpet.ordertype) LIKE 'T'
-       AND pro2dw.oeeh.orderno LIKE ? ) )
+       AND pro2dw.icsw.whse = 'DAL' ) )
     EOS
 
-    ALL_SO_NUMS = <<~EOS
-    SELECT DISTINCT
-      CAST(pro2dw.oeel.orderno AS INT) AS sales_order
+    SPECIFIC_SOS = <<~EOS
+    SELECT
+      CAST(pro2dw.oeel.orderno AS INT)    AS sales_order,
+      CAST(pro2dw.oeel.ordersuf AS INT)   AS suffix,
+      CAST(pro2dw.oeel.lineno_ AS INT)    AS ord_line_num,
+           pro2dw.oeeh.custpo             AS customer_po_num,
+      CAST(pro2dw.kpet.wono AS INT)       AS wo_num,
+      CAST(pro2dw.kpet.wosuf AS INT)      AS wo_suffix,
+      CAST(pro2dw.kpet.cono AS INT)       AS company_num,
+           0                              AS wt_num,
+           0                              AS wt_suffix,
+      CAST(pro2dw.kpet.stagecd AS INT)    AS wo_stage_code,
+           pro2dw.kpet.whse               AS warehouse,
+           pro2dw.kpet.shipprod           AS part_num,
+      UPPER(pro2dw.oeelk.shipprod)        AS com_part_num,
+      CAST(pro2dw.oeelk.qtyneeded AS INT) AS component_qty,
+           pro2dw.oeelk.prodcat           AS product_category,
+      CAST(pro2dw.oeelk.seqno AS INT)     AS sequence_num,
+           pro2dw.kpet.enterdt            AS order_date,
+           pro2dw.oeeh.reqshipdt          AS requested_ship_date,
+      CAST(pro2dw.oeeh.stagecd AS INT)    AS so_stage_code,
+      CAST(pro2dw.kpet.qtyord AS INT)     AS wo_line_qty,
+      CAST(pro2dw.kpet.qtyship AS INT)    AS wo_line_qty_shipped,
+           pro2dw.kpet.ordertype          AS wo_type,
+      CAST(pro2dw.oeel.price AS FLOAT)    AS line_item_price,
+           pro2dw.oeel.whse               AS selling_warehouse,
+           pro2dw.oeeh.custno             AS customer_num,
+           pro2dw.oeeh.shiptonm           AS ship_to_name,
+           pro2dw.oeeh.shiptoaddr##1      AS address1,
+           pro2dw.oeeh.shiptoaddr##2      AS address2,
+           pro2dw.oeeh.shiptocity         AS city,
+           pro2dw.oeeh.shiptost           AS state,
+           pro2dw.oeeh.shiptozip          AS zip,
+           pro2dw.com.noteln##1           AS ord_line_comment,
+      NVL(TRIM(pro2dw.icsw.binloc1),'--') AS prod_bin,
+           pro2dw.icsw.binloc2            AS prod_detail,
+           pro2dw.icsw.qtyonhand          AS prod_qty_on_hand,
+           pro2dw.icsp.weight             AS prod_weight,
+           pro2dw.icsp.descrip##1         AS prod_desc1,
+           pro2dw.icsp.descrip##2         AS prod_desc2,
+           (SELECT pro2dw.icsp.weight
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_weight,
+           (SELECT pro2dw.icsp.descrip##1
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_desc1,
+           (SELECT pro2dw.icsp.descrip##2
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_desc2
     FROM
       pro2dw.kpet
       INNER JOIN pro2dw.oeel  ON pro2dw.kpet.orderaltno = pro2dw.oeel.orderno
@@ -125,15 +224,72 @@ module Schedule
       INNER JOIN pro2dw.oeeh  ON pro2dw.kpet.orderaltno = pro2dw.oeeh.orderno
                              AND pro2dw.kpet.orderaltsuf = pro2dw.oeeh.ordersuf
                              AND pro2dw.kpet.cono = pro2dw.oeeh.cono
-      INNER JOIN pro2dw.oeelk ON pro2dw.oeelk.cono = pro2dw.kpet.cono
-                             AND pro2dw.oeelk.orderno = pro2dw.kpet.wono
+      INNER JOIN pro2dw.oeelk ON pro2dw.kpet.cono = pro2dw.oeelk.cono
+                             AND pro2dw.kpet.wono = pro2dw.oeelk.orderno
+      LEFT JOIN pro2dw.com   ON pro2dw.oeel.orderno = pro2dw.com.orderno
+                             AND pro2dw.oeel.ordersuf = pro2dw.com.ordersuf
+                             AND pro2dw.oeel.lineno_ = pro2dw.com.lineno_
+      INNER JOIN pro2dw.icsp  ON UPPER(pro2dw.oeelk.shipprod) = UPPER(pro2dw.icsp.prod)
+      INNER JOIN pro2dw.icsw  ON pro2dw.icsp.cono = pro2dw.icsw.cono
+                             AND UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.icsw.prod)
     WHERE
      ( pro2dw.oeeh.stagecd in (1, 2)
        AND pro2dw.kpet.whse LIKE 'DAL'
-       AND UPPER(pro2dw.kpet.ordertype) LIKE 'O' )
+       AND UPPER(pro2dw.kpet.ordertype) LIKE 'O'
+       AND pro2dw.icsw.whse = 'DAL'
+       AND pro2dw.oeel.orderno IN ? )
     UNION
-    (SELECT DISTINCT
-      CAST(pro2dw.oeel.orderno AS INT) AS sales_order
+    (SELECT
+      CAST(pro2dw.oeel.orderno AS INT)    AS sales_order,
+      CAST(pro2dw.oeel.ordersuf AS INT)   AS suffix,
+      CAST(pro2dw.oeel.lineno_ AS INT)    AS ord_line_num,
+           pro2dw.oeeh.custpo             AS customer_po_num,
+      CAST(pro2dw.kpet.wono AS INT)       AS wo_num,
+      CAST(pro2dw.kpet.wosuf AS INT)      AS wo_suffix,
+      CAST(pro2dw.kpet.cono AS INT)       AS company_num,
+      CAST(pro2dw.wtel.wtno AS INT)       AS wt_num,
+      CAST(pro2dw.wtel.wtsuf AS INT)      AS wt_suffix,
+      CAST(pro2dw.kpet.stagecd AS INT)    AS wo_stage_code,
+           pro2dw.kpet.whse               AS warehouse,
+           pro2dw.kpet.shipprod           AS part_num,
+      UPPER(pro2dw.oeelk.shipprod)        AS com_part_num,
+      CAST(pro2dw.oeelk.qtyneeded AS INT) AS component_qty,
+           pro2dw.oeelk.prodcat           AS product_category,
+      CAST(pro2dw.oeelk.seqno AS INT)     AS sequence_num,
+           pro2dw.kpet.enterdt            AS order_date,
+           pro2dw.oeeh.reqshipdt          AS requested_ship_date,
+      CAST(pro2dw.oeeh.stagecd AS INT)    AS so_stage_code,
+      CAST(pro2dw.kpet.qtyord AS INT)     AS wo_line_qty,
+      CAST(pro2dw.kpet.qtyship AS INT)    AS wo_line_qty_shipped,
+           pro2dw.kpet.ordertype          AS wo_type,
+      CAST(pro2dw.oeel.price AS FLOAT)    AS line_item_price,
+           pro2dw.oeel.whse               AS selling_warehouse,
+           pro2dw.oeeh.custno             AS customer_num,
+           pro2dw.oeeh.shiptonm           AS ship_to_name,
+           pro2dw.oeeh.shiptoaddr##1      AS address1,
+           pro2dw.oeeh.shiptoaddr##2      AS address2,
+           pro2dw.oeeh.shiptocity         AS city,
+           pro2dw.oeeh.shiptost           AS state,
+           pro2dw.oeeh.shiptozip          AS zip,
+           pro2dw.com.noteln##1           AS ord_line_comment,
+      NVL(TRIM(pro2dw.icsw.binloc1),'--') AS prod_bin,
+           pro2dw.icsw.binloc2            AS prod_detail,
+           pro2dw.icsw.qtyonhand          AS prod_qty_on_hand,
+           pro2dw.icsp.weight             AS prod_weight,
+           pro2dw.icsp.descrip##1         AS prod_desc1,
+           pro2dw.icsp.descrip##2         AS prod_desc2,
+           (SELECT pro2dw.icsp.weight
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_weight,
+           (SELECT pro2dw.icsp.descrip##1
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_desc1,
+           (SELECT pro2dw.icsp.descrip##2
+            FROM pro2dw.icsp
+            WHERE UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.kpet.shipprod))
+                                          AS fg_desc2
     FROM
       pro2dw.kpet
       INNER JOIN pro2dw.wtel  ON pro2dw.kpet.cono = pro2dw.wtel.cono
@@ -150,12 +306,20 @@ module Schedule
       INNER JOIN pro2dw.oeeh  ON pro2dw.oeel.cono = pro2dw.oeeh.cono
                              AND pro2dw.oeel.orderno = pro2dw.oeeh.orderno
                              AND pro2dw.oeel.ordersuf = pro2dw.oeeh.ordersuf
-      INNER JOIN pro2dw.oeelk ON pro2dw.oeelk.cono = pro2dw.kpet.cono
-                             AND pro2dw.oeelk.orderno = pro2dw.kpet.wono
+      INNER JOIN pro2dw.oeelk ON pro2dw.kpet.cono = pro2dw.oeelk.cono
+                             AND pro2dw.kpet.wono = pro2dw.oeelk.orderno
+      LEFT JOIN pro2dw.com   ON pro2dw.oeel.orderno = pro2dw.com.orderno
+                             AND pro2dw.oeel.ordersuf = pro2dw.com.ordersuf
+                             AND pro2dw.oeel.lineno_ = pro2dw.com.lineno_
+      INNER JOIN pro2dw.icsp  ON UPPER(pro2dw.oeelk.shipprod) = UPPER(pro2dw.icsp.prod)
+      INNER JOIN pro2dw.icsw  ON pro2dw.icsp.cono = pro2dw.icsw.cono
+                             AND UPPER(pro2dw.icsp.prod) = UPPER(pro2dw.icsw.prod)
     WHERE
      ( pro2dw.oeeh.stagecd in (1, 2)
        AND pro2dw.kpet.whse LIKE 'DAL'
-       AND UPPER(pro2dw.kpet.ordertype) LIKE 'T' ) )
+       AND UPPER(pro2dw.kpet.ordertype) LIKE 'T'
+       AND pro2dw.icsw.whse = 'DAL'
+       AND pro2dw.oeel.orderno IN ? ) )
     EOS
 
     POS_QRY_STR = <<~EOS
@@ -222,48 +386,10 @@ module Schedule
       AND   po.shipprod    = ?
     EOS
 
-    PROD_QRY_STR = <<~EOS
-      SELECT
-        TRIM(pro2dw.icsw.binloc1)    AS prod_bin,
-        pro2dw.icsw.binloc2    AS prod_detail,
-        pro2dw.icsw.qtyonhand  AS prod_qty_on_hand,
-        pro2dw.icsp.weight     AS prod_weight,
-        pro2dw.icsp.descrip##1 AS prod_desc1,
-        pro2dw.icsp.descrip##2 AS prod_desc2
-      FROM
-        pro2dw.icsp
-        INNER JOIN pro2dw.icsw  ON pro2dw.icsp.cono = pro2dw.icsw.cono
-                               AND upper(pro2dw.icsp.prod) = upper(pro2dw.icsw.prod)
-      WHERE
-        pro2dw.icsw.whse = 'DAL'
-        AND upper(pro2dw.icsw.prod) = ?
-    EOS
-
     SHAZ_SO_EXISTS = <<~EOS
       SELECT tblJobs.JobSalesOrderNo
       FROM tblJobs
       WHERE tblJobs.JobSalesOrderNo = ?
-    EOS
-
-    # not used for now
-    SHAZ_INSERT_HEADER = <<~EOS
-      INSERT INTO tblJobs (JobSalesOrderNo, JobCustomer, JobDescription,
-                           JobShipDate, JobShipDateOriginal, JobLayupCompleted,
-                           JobLocation)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    EOS
-
-    # not used for now
-    SHAZ_INSERT_DETAIL = <<~EOS
-      INSERT INTO tblLayupItems
-        (JobID, LayupSizeID, LayupQnty, LayupTOP, LayupCoreThk,
-         LayupCoreMatl, LayupBOTTOM, LayupComponent, LayupExclude, LayupInstructions,
-         LayupStagerNote, LayupPO, LayupPO2, LayupPORxOverride, LayupGlueOverride,
-         LayupBin)
-      VALUES (?, ?, ?, ?, ?,
-              ?, ?, ?, ?, ?,
-              ?, ?, ?, ?, ?,
-              ? )
     EOS
   end
 end

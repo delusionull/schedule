@@ -14,11 +14,11 @@ module Schedule
 
     def bin
       return '' if nobin
-      material ? material[:prod_bin] : 'NOT_FOUND'
+      @lines.find { |h| h[:sequence_num] == line_num }[:prod_bin]
     end
 
     def qty_on_hand
-      material ? material[:prod_qty_on_hand].to_i : 0
+      @lines.find { |h| h[:sequence_num] == line_num }[:prod_qty_on_hand]
     end
 
     def po
@@ -31,11 +31,15 @@ module Schedule
     end
 
     def desc1
-      material ? material[:prod_desc1].gsub(/[^\w ]/, '') : ''
+      @lines.find { |h| h[:sequence_num] == line_num }[:prod_desc1].gsub(/[^\w ]/, '')
     end
 
     def desc2
-      material ? material[:prod_desc2].gsub(/[^\w ]/, '') : ''
+      @lines.find { |h| h[:sequence_num] == line_num }[:prod_desc2].gsub(/[^\w ]/, '')
+    end
+
+    def weight
+      @lines.find { |h| h[:sequence_num] == line_num }[:weight].to_i
     end
 
     def instructions
@@ -43,10 +47,6 @@ module Schedule
     end
 
     private
-
-    def material
-      Schedule::DBs::DB_INFOR.fetch(Schedule::Queries::PROD_QRY_STR, code).first
-    end
 
     def line_num
       @panel_config.core_last_line + (@panel_config.facedown || @panel_config.g2s ? 1 : 2)
@@ -62,11 +62,6 @@ module Schedule
       end
     end
 
-    # this is to poll 'bin2' to determine if a material is liner/backer/resin
-    def material_code(prod)
-      Schedule::DBs::DB_INFOR.fetch(Schedule::Queries::PROD_QRY_STR, prod).first[:prod_detail][0..1]
-    end
-
     def get_lam_instructions
       text = ''
       text << " *RAW 1 SIDE*" if raw
@@ -78,7 +73,6 @@ module Schedule
     private
 
     def line_num
-      #@panel_config.core_last_line + (@panel_config.facedown || @panel_config.g2s ? 1 : 2)
       @panel_config.core_last_line + (@panel_config.facedown ? 1 : 2)
     end
 

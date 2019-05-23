@@ -6,7 +6,7 @@ module Schedule
     @@iteration = 0
 
     def initialize(so_num)
-      @so_qry_lines = Schedule::DBs::DB_INFOR.fetch(Schedule::Queries::SO_QRY_STR, so_num, so_num)
+      @so_qry_lines = $sos.select { |line| line[:sales_order] == so_num }
       @so_num = so_num
       @@iteration += 1
     end

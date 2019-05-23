@@ -33,17 +33,13 @@ module Schedule
 
     def core_last_line
       return 0 if customer_core
-      cll = @lines.find_all{|h| Schedule::Constants::CORE_CODES.member?(core_code(h[:com_part_num])) }
+      cll = @lines.find_all{|h| Schedule::Constants::CORE_CODES.member?(h[:prod_detail][0..1]) }
             .max_by{|h| h[:sequence_num] }[:sequence_num].to_i
       raise "Core code not in list or lines out of order" if cll == 0
       return cll
     end
 
     private
-
-    def core_code(prod)
-      Schedule::DBs::DB_INFOR.fetch(Schedule::Queries::PROD_QRY_STR, prod.upcase).first[:prod_detail][0..1]
-    end
 
     def customer_core
       @pn_info[:core] == 'CUST'

@@ -10,6 +10,10 @@ module Schedule
       c.empty? ? ["No core. Check core codes."] : c
     end
 
+    def weight
+      codes.sum{|code| wt(code)}
+    end
+
     def instructions
       get_core_instructions
     end
@@ -20,6 +24,10 @@ module Schedule
       1.upto(pconf.core_last_line).collect do |line_num|
         lns.find { |h| h[:sequence_num] == line_num }[:com_part_num]
       end
+    end
+
+    def wt(code)
+      @lines.find { |h| h[:com_part_num] == code }[:prod_weight].to_i
     end
 
     def get_core_instructions
