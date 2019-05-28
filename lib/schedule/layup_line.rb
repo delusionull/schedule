@@ -60,11 +60,15 @@ module Schedule
     end
 
     def desc1
-      @lines[0][:fg_desc1]
+      @lines[0][:fg_desc1].gsub(/[^\w ]/, '')
     end
 
     def desc2
-      @lines[0][:fg_desc2]
+      @lines[0][:fg_desc2].gsub(/[^\w ]/, '')
+    end
+
+    def customer_pn
+      /\!~(.+?)( |$)/.match(@lines[0][:ord_line_comment]).to_a[1].to_s
     end
 
     private

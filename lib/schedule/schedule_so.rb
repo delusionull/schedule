@@ -70,7 +70,7 @@ module Schedule
                            ln.wo_num, ln.wt_num, ln.face.desc1, ln.face.desc2,
                            ln.back.desc1, ln.back.desc2, ln.part_num, ln.desc1,
                            ln.desc2, ln.face.prodcat, ln.back.prodcat, ln.weight,
-                           ln.face.weight, ln.back.weight, ln.core.weight)
+                           ln.face.weight, ln.back.weight, ln.core.weight, ln.customer_pn)
         update_notes(ln.wo_num)
       end
     end
@@ -107,7 +107,7 @@ module Schedule
                            wo_num, wt_num, face_desc1, face_desc2,
                            back_desc1, back_desc2, fg_part_num, fg_desc1,
                            fg_desc2, face_prodcat, back_prodcat, fg_weight,
-                           face_weight, back_weight, core_weight
+                           face_weight, back_weight, core_weight, customer_pn
                           )
       if $opts.debug
         ap "VALUES (#{job}, #{shaz_size}, \'#{qty}\', \'#{top}\', \'#{thick}\',
@@ -117,7 +117,7 @@ module Schedule
           \'#{wo_num}\', \'#{wt_num}\', \'#{face_desc1}\', \'#{face_desc2}\',
           \'#{back_desc1}\', \'#{back_desc2}\', \'#{fg_part_num}\', \'#{fg_desc1}\',
           \'#{fg_desc1}\', \'#{face_prodcat}\', \'#{back_prodcat}\', \'#{fg_weight}\',
-          \'#{face_weight}\', \'#{back_weight}\', \'#{core_weight}\' )"
+          \'#{face_weight}\', \'#{back_weight}\', \'#{core_weight}\', \'#{customer_pn}\' )"
       end
       return if ($opts.debug || $opts.test)
       Schedule::DBs::DB_SCHED.run(
@@ -129,7 +129,7 @@ module Schedule
          WoNumber, WtNumber, TopDesc1, TopDesc2,
          BotDesc1, BotDesc2, FGPartNum, FGPartDesc1,
          FGPartDesc2, ProdcatTop, ProdcatBot, FGPartWeight,
-         TopWeight, BotWeight, LayupCoreSumWeight)
+         TopWeight, BotWeight, LayupCoreSumWeight, LabelInfoSupplimental)
       VALUES (#{job}, #{shaz_size}, \'#{qty}\', \'#{top}\', \'#{thick}\',
             \'#{core}\', \'#{bottom}\', \'#{shaz_comment}\', \'#{shaz_line}\',
             \'#{po_face}\', \'#{po_back}\', #{po_date}, #{lu_date},
@@ -137,7 +137,7 @@ module Schedule
             \'#{wo_num}\', \'#{wt_num}\', \'#{face_desc1}\', \'#{face_desc2}\',
             \'#{back_desc1}\', \'#{back_desc2}\', \'#{fg_part_num}\', \'#{fg_desc1}\',
             \'#{fg_desc1}\', \'#{face_prodcat}\', \'#{back_prodcat}\', \'#{fg_weight}\',
-            \'#{face_weight}\', \'#{back_weight}\', \'#{core_weight}\' )")
+            \'#{face_weight}\', \'#{back_weight}\', \'#{core_weight}\', \'#{customer_pn}\' )")
     end
 
     def job_id
