@@ -1,6 +1,4 @@
 require_relative 'core'
-#require_relative 'back'
-#require_relative 'face'
 require_relative 'laminate'
 require_relative 'panel_config'
 
@@ -9,7 +7,7 @@ module Schedule
     def initialize(lines)
       @lines = lines
       @part_num = part_num
-      @pn_info = pn_info
+      @pn_info = pn_info || prompt_for_pn_info
       @panel_config = panel_config
     end
 
@@ -85,7 +83,7 @@ module Schedule
       (?<face>(#{Schedule::Constants::FACE_CODES*'|'}|.{3}.*)) # the face code
       (?<core>#{Schedule::Constants::CORE_CODES*'|'})          # the two digit core code
       (?<thick>[0-5]\d)                                        # the panel thickness
-      (?<back>(#{Schedule::Constants::BACK_CODES*'|'}|.{5}.*)) # the two digit back code
+      (?<back>(#{Schedule::Constants::BACK_CODES*'|'}|.{4}.*)) # the two digit back code
       (?<size>#{Schedule::Constants::SIZE.keys*'|'})           # the two digit size code
       (?<orientation>[UD]?)                                    # the panel orientation
       /x.match(@part_num)
@@ -106,7 +104,7 @@ module Schedule
       (?<face>(#{Schedule::Constants::FACE_CODES*'|'}|.{3}.*)) # the face code
       (?<core>#{Schedule::Constants::CORE_CODES*'|'})          # the two digit core code
       (?<thick>([0-5]\d)?)                                     # the panel thickness
-      (?<back>(#{Schedule::Constants::BACK_CODES*'|'}|.{5}.*)) # the two digit back code
+      (?<back>(#{Schedule::Constants::BACK_CODES*'|'}|.{4}.*)) # the two digit back code
       (?<size>#{Schedule::Constants::SIZE.keys*'|'})           # the two digit size code
       (?<orientation>[UD]?)                                    # the panel orientation
       /x.match(@part_num)
@@ -117,6 +115,22 @@ module Schedule
               :face => info[:face],
               :core => info[:core],
               :orientation => info[:orientation] }
+    end
+
+    def prompt_for_pn_info
+      puts "Cannot parse info from non-typical part number: #{@part_num}"
+      puts "Please manually input required data."
+      puts Schedule::Constants::THICK.keys*', '
+      thick = Utils.prompt "Enter panel thickness in mm: "
+      puts Schedule::Constants::CORE_CODES*', '
+      core = Utils.prompt "Enter panel core code: "
+      puts Schedule::Constants::SIZE.keys*', '
+      size = Utils.prompt "Enter panel size code: "
+      return {:thick => thick,
+              :size => size.to_s.upcase,
+              :back => back.to_s.upcase,
+              :face => face.to_s.upcase,
+              :core => core.to_s.upcase}
     end
   end
 end

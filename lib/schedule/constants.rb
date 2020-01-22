@@ -17,19 +17,22 @@ module Schedule
     }
 
     CORE_CODES = %w(
-      PB PF PM PS PN MD MF MG MM MS MN ML XN XS YA
-      YB Y1 YC YR YX YS YN YG YL DO CC VP CS CUST
+      PB PF PM PS PN PR MD MF MG MM MS MN ML XN XS VM
+      Y1 YA YB YC YM YR YX YS YN YG YL DO CC VP CS CUST ZZ
     )
 
-    FACE_CODES = %w( BK LW LP LB LA LG RE RA CS THYS FORBO LOFT )
+    FACE_CODES = %w( BK LW LP LB LA LG RE RA CS VN
+                     THYS THYSWFR THYSFFR THYSPFR THYSNFR FORBO LOFT 
+                     B4 B6 BA BB BC BD BE BF BG BH BI BJ BL BM
+                     BN BO BP BQ BR BS BT BU BV BW BX BY BZ )
 
     BACK_CODES = FACE_CODES << 'G2'
 
     SIZE = {
       "B1" => {:inches => "3096",  :shazam => 50},
-      "B2" => {:inches => "30121", :shazam => 49},
-      "B3" => {:inches => "30145", :shazam => 46},
-      "38" => {:inches => "3697",  :shazam => 43},
+      "B2" => {:inches => "30120", :shazam => 49},
+      "B3" => {:inches => "30144", :shazam => 46},
+      "38" => {:inches => "3696",  :shazam => 51},
       "31" => {:inches => "36120", :shazam => 52},
       "32" => {:inches => "36144", :shazam => 53},
       "M4" => {:inches => "4878",  :shazam => 61},
@@ -45,6 +48,31 @@ module Schedule
       "TA" => {:inches => "4896",  :shazam =>  1},
       "TB" => {:inches => "4896",  :shazam =>  1},
       "TC" => {:inches => "4896",  :shazam =>  1},
+    }
+
+    LAM_SIZE = {
+      "3096"     => "3096",
+      "30120"    => "30120",
+      "30144"    => "30144",
+      "3696"     => "3696",
+      "37AA97AA" => "3696",
+      "36120"    => "36120",
+      "36144"    => "36144",
+      "4878"     => "4878",
+      "3896"     => "3896",
+      "4896"     => "4896",
+      "48120"    => "48120",
+      "48144"    => "48144",
+      "51120"    => "51120",
+      "6072"     => "6072",
+      "61AA72BJ" => "6072",
+      "6096"     => "6096",
+      "60120"    => "60120",
+      "60144"    => "60144",
+    }
+
+    CORE_SIZE = {
+
     }
 
     AFI_INFOR_SIZE = {

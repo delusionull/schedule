@@ -12,6 +12,11 @@ module Schedule
       @lines.find { |h| h[:sequence_num] == line_num }[:com_part_num]
     end
 
+    def size
+      return 0 if raw
+      getsize(code)
+    end
+
     def bin
       return '' if nobin
       @lines.find { |h| h[:sequence_num] == line_num }[:prod_bin]
@@ -26,7 +31,7 @@ module Schedule
     end
 
     def prodcat
-      return '' if @panel_config.rawface
+      return '' if raw
       @lines.find { |h| h[:sequence_num] == line_num }[:product_category]
     end
 
@@ -60,6 +65,9 @@ module Schedule
       else
         0
       end
+    end
+
+    def getsize(code)
     end
 
     def get_lam_instructions

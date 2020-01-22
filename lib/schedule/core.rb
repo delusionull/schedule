@@ -6,6 +6,7 @@ module Schedule
     end
 
     def codes
+      return ['CUSTOMER CORE'] if @panel_config.customer_core
       c = get_codes(@lines, @panel_config)
       c.empty? ? ["No core. Check core codes."] : c
     end

@@ -15,12 +15,16 @@ module Schedule
       @@iteration
     end
 
+    def so_suffix
+      @so_qry_lines.first[:suffix]
+    end
+
     def customer_po_num
       (@so_qry_lines.first[:customer_po_num].strip).gsub(/[^\w ]/, '')
     end
 
     def ship_to_name
-      (@so_qry_lines.first[:ship_to_name].strip).gsub(/[^\w ]/, '')
+      (@so_qry_lines.first[:ship_to_name]).gsub(/[^&\w]+/, ' ').strip
     end
 
     def customer_num
@@ -28,15 +32,15 @@ module Schedule
     end
 
     def address1
-      (@so_qry_lines.first[:address1].strip).gsub(/[^\w ]/, ' ').strip
+      (@so_qry_lines.first[:address1]).gsub(/[^\w]+/, ' ').strip
     end
 
     def address2
-      (@so_qry_lines.first[:address2].strip).gsub(/[^\w ]/, ' ').strip
+      (@so_qry_lines.first[:address2]).gsub(/[^\w]+/, ' ').strip
     end
 
     def city
-      (@so_qry_lines.first[:city].strip).gsub(/[^\w ]/, ' ').strip
+      (@so_qry_lines.first[:city]).gsub(/[^\w]+/, ' ').strip
     end
 
     def state

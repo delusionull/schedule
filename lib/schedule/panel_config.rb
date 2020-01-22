@@ -28,7 +28,12 @@ module Schedule
     end
 
     def metalglue
+      @lines.each{|l| return true if l[:com_part_num].upcase.start_with?('MDO')}
       @pn_info[:core] == 'DO'
+    end
+
+    def customer_core
+      @pn_info[:core] == 'ZZ' || @pn_info[:core] == 'CUST'
     end
 
     def core_last_line
@@ -37,12 +42,6 @@ module Schedule
             .max_by{|h| h[:sequence_num] }[:sequence_num].to_i
       raise "Core code not in list or lines out of order" if cll == 0
       return cll
-    end
-
-    private
-
-    def customer_core
-      @pn_info[:core] == 'CUST'
     end
   end
 end

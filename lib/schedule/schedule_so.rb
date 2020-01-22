@@ -47,7 +47,7 @@ module Schedule
     def push_to_shazam(so)
       shaz_insert_header(so.so_num, so.ship_to_name, so.customer_po_num,
                          so.requested_ship_date, so.customer_num, so.address1,
-                         so.address2, so.city, so.state, so.zipcode)
+                         so.address2, so.city, so.state, so.zipcode, Time.now.strftime('%F %T'))
       @job_id = job_id
       so.layup_lines.lines.each do |ln|
         shaz_size = Schedule::Constants::SIZE[ln.size][:shazam]
@@ -62,10 +62,11 @@ module Schedule
                     'NULL'
                   end
         lu_date = "\##{Schedule::Utils.shift_business_day(so.requested_ship_date, -1).strftime("%F")}\#"
+        lu_ship_date = "\##{Schedule::Utils.shift_business_day(so.requested_ship_date, 0).strftime("%F")}\#"
 
         shaz_insert_detail(@job_id, shaz_size, ln.qty, ln.face.code, ln.thick,
                            ln.core.codes*' + ', ln.back.code, shaz_comment, shaz_line,
-                           ln.face.po.number, ln.back.po.number, po_date, lu_date,
+                           ln.face.po.number, ln.back.po.number, po_date, lu_date, lu_ship_date, 
                            shaz_comp, shaz_exclude, ln.face.bin, ln.back.bin,
                            ln.wo_num, ln.wt_num, ln.face.desc1, ln.face.desc2,
                            ln.back.desc1, ln.back.desc2, ln.part_num, ln.desc1,
@@ -83,7 +84,7 @@ module Schedule
     end
 
     def shaz_insert_header(so_num, cust, cust_po, shipdate, customer_num,
-                           address1, address2, city, state, zipcode)
+                           address1, address2, city, state, zipcode, date_time_now)
       if $opts.debug
         ap "VALUES (\'#{so_num}\', \'#{cust}\', \'#{cust_po}\', \'#{shipdate}\', \'#{shipdate}\', FALSE, 2,
                 \'#{customer_num}\', \'#{address1}\', \'#{address2}\', \'#{city}\',
@@ -94,15 +95,15 @@ module Schedule
       "INSERT INTO tblJobs (JobSalesOrderNo, JobCustomer, JobDescription,
                            JobShipDate, JobShipDateOriginal, JobLayupCompleted,
                            JobLocation, CustomerNO, ShipToAddress1, ShipToAddress2,
-                           ShipToCity, ShipToState, ShipToZipCode, CustomerPO)
+                           ShipToCity, ShipToState, ShipToZipCode, CustomerPO, JobEnteredDateTime)
       VALUES (\'#{so_num}\', \'#{cust}\', \'#{cust_po}\', \'#{shipdate}\', \'#{shipdate}\', FALSE, 2,
               \'#{customer_num}\', \'#{address1}\', \'#{address2}\', \'#{city}\',
-              \'#{state}\', \'#{zipcode}\',  \'#{cust_po}\')")
+              \'#{state}\', \'#{zipcode}\',  \'#{cust_po}\', \'#{date_time_now}\')")
     end
 
     def shaz_insert_detail(job, shaz_size, qty, top, thick,
                            core, bottom, shaz_comment, shaz_line,
-                           po_face, po_back, po_date, lu_date,
+                           po_face, po_back, po_date, lu_date, lu_ship_date,
                            shaz_comp, shaz_exclude, face_bin, back_bin,
                            wo_num, wt_num, face_desc1, face_desc2,
                            back_desc1, back_desc2, fg_part_num, fg_desc1,
@@ -112,7 +113,7 @@ module Schedule
       if $opts.debug
         ap "VALUES (#{job}, #{shaz_size}, \'#{qty}\', \'#{top}\', \'#{thick}\',
           \'#{core}\', \'#{bottom}\', \'#{shaz_comment}\', \'#{shaz_line}\',
-          \'#{po_face}\', \'#{po_back}\', #{po_date}, #{lu_date},
+          \'#{po_face}\', \'#{po_back}\', #{po_date}, #{lu_date}, #{lu_ship_date},
             #{shaz_comp}, #{shaz_exclude}, \'#{face_bin}\', \'#{back_bin}\',
           \'#{wo_num}\', \'#{wt_num}\', \'#{face_desc1}\', \'#{face_desc2}\',
           \'#{back_desc1}\', \'#{back_desc2}\', \'#{fg_part_num}\', \'#{fg_desc1}\',
@@ -124,7 +125,7 @@ module Schedule
       "INSERT INTO tblLayupItems
         (JobID, LayupSizeID, LayupQnty, LayupTOP, LayupCoreThk,
          LayupCoreMatl, LayupBOTTOM, LayupInstructions, LayupStagerNote,
-         LayupPO, LayupPO2, LayupPORxOverride, LayupGlueOverride,
+         LayupPO, LayupPO2, LayupPORxOverride, LayupGlueOverride, ShipDate,
          LayupComponent, LayupExclude, InforBinTop, InforBinBot,
          WoNumber, WtNumber, TopDesc1, TopDesc2,
          BotDesc1, BotDesc2, FGPartNum, FGPartDesc1,
@@ -132,7 +133,7 @@ module Schedule
          TopWeight, BotWeight, LayupCoreSumWeight, LabelInfoSupplimental)
       VALUES (#{job}, #{shaz_size}, \'#{qty}\', \'#{top}\', \'#{thick}\',
             \'#{core}\', \'#{bottom}\', \'#{shaz_comment}\', \'#{shaz_line}\',
-            \'#{po_face}\', \'#{po_back}\', #{po_date}, #{lu_date},
+            \'#{po_face}\', \'#{po_back}\', #{po_date}, #{lu_date}, #{lu_ship_date},
               #{shaz_comp}, #{shaz_exclude}, \'#{face_bin}\', \'#{back_bin}\',
             \'#{wo_num}\', \'#{wt_num}\', \'#{face_desc1}\', \'#{face_desc2}\',
             \'#{back_desc1}\', \'#{back_desc2}\', \'#{fg_part_num}\', \'#{fg_desc1}\',
