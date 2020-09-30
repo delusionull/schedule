@@ -10,15 +10,18 @@ module Schedule
 
     TEST = 'NO'
 
-    INFOR_DB   = '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)' +
-                   "(HOST=#{TEST == 'YES' ? '***REMOVED***' : '***REMOVED***'}" +
-                   ')(PORT=***REMOVED***))(CONNECT_DATA=(SID=' +
-                   "#{TEST == 'YES' ? '***REMOVED***' : '***REMOVED***'})))"
+    INFOR_DB =
+      '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)' +
+      "(HOST=#{TEST == 'YES' ? Schedule::Credentials::TESTHOST : Schedule::Credentials::HOST}" +
+      ')(PORT=' + Schedule::Credentials::PORT.to_s + '))(CONNECT_DATA=(SID=' +
+      "#{TEST == 'YES' ? Schedule::Credentials::TESTSID : Schedule::Credentials::SID})))"
 
-    DB_INFOR = Sequel.connect(adapter: 'oracle',
-                              user: Schedule::Credentials::USR,
-                              password: Schedule::Credentials::PWD,
-                              database: INFOR_DB)
+    DB_INFOR = Sequel.connect(
+      adapter: 'oracle',
+      user: "#{TEST == 'YES' ? Schedule::Credentials::TESTUSR : Schedule::Credentials::USR}",
+      password: "#{TEST == 'YES' ? Schedule::Credentials::TESTPWD : Schedule::Credentials::PWD}",
+      database: INFOR_DB
+    )
 
     SCHED_PATH = 'Y:\\shazam\\Schedule Shazam Dal_NEW.mdb'
 
