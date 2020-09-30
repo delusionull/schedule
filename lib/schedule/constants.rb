@@ -17,8 +17,8 @@ module Schedule
     }
 
     CORE_CODES = %w(
-      PB PF PM PS PN PR MD MF MG MM MS MN ML XN XS VM
-      Y1 YA YB YC YM YR YX YS YN YG YL DO CC VP CS CUST ZZ
+      PB PF PM PS PN MD MB MF MG MM MS MN ML XN XS YA VM
+      Y1 YA YB YC YG YL YM YN YR YS YX DO CC VP CS CUST ZZ
     )
 
     FACE_CODES = %w( BK LW LP LB LA LG RE RA CS VN
@@ -41,6 +41,7 @@ module Schedule
       "41" => {:inches => "48120", :shazam =>  2},
       "42" => {:inches => "48144", :shazam =>  3},
       "AA" => {:inches => "51120", :shazam => 47},
+      "55" => {:inches => "6060",  :shazam => 57},
       "56" => {:inches => "6072",  :shazam => 42},
       "58" => {:inches => "6096",  :shazam =>  4},
       "51" => {:inches => "60120", :shazam =>  5},
@@ -64,6 +65,7 @@ module Schedule
       "48120"    => "48120",
       "48144"    => "48144",
       "51120"    => "51120",
+      "6060"     => "6060",
       "6072"     => "6072",
       "61AA72BJ" => "6072",
       "6096"     => "6096",
@@ -79,6 +81,7 @@ module Schedule
       "38" => "38",
       "83" => "38",
       "48" => "48",
+      "84" => "48",
       "41" => "41",
       "14" => "41",
       "42" => "42",

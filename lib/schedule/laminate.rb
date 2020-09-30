@@ -73,6 +73,7 @@ module Schedule
     def get_lam_instructions
       text = ''
       text << " *RAW 1 SIDE*" if raw
+      text << " *USE 204 BACKER*" if @panel_config.backer204
       return text
     end
   end

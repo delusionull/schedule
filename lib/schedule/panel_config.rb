@@ -32,6 +32,11 @@ module Schedule
       @pn_info[:core] == 'DO'
     end
 
+    def backer204
+      @pn_info[:back] == 'BL' ||
+      @pn_info[:face] == 'BL'
+    end
+
     def customer_core
       @pn_info[:core] == 'ZZ' || @pn_info[:core] == 'CUST'
     end

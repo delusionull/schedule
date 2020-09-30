@@ -20,7 +20,8 @@ module Schedule
     end
 
     def wt_num
-      (@lines[0][:wt_num].to_s + @lines[0][:wt_suffix].to_s.rjust(2, "0")).to_i
+      @lines[0][:wt_num].to_i
+      #(@lines[0][:wt_num].to_s + @lines[0][:wt_suffix].to_s.rjust(2, "0")).to_i
     end
 
     def qty
@@ -76,6 +77,7 @@ module Schedule
     end
 
     def pn_info
+      ap @part_num
       return afi_pn_info if @part_num[0..1] == '0-'
       return cust_pn_info if /CUST/.match(@part_num)
       /
