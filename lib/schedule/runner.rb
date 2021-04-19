@@ -49,7 +49,6 @@ module Schedule
 
     def get_so_nums
       $opts.all_sos ? $sos.map { |x| x[:sales_order] }.uniq : $opts.sos
-      end
     end
   end
 end
