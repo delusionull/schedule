@@ -29,6 +29,7 @@ module Schedule
 
     def metalglue
       @lines.each{|l| return true if l[:com_part_num].upcase.start_with?('MDO')}
+      @lines.each{|l| return true if l[:part_num].upcase.start_with?('FORBO')}
       @pn_info[:core] == 'DO'
     end
 
