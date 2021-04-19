@@ -25,13 +25,14 @@ module Schedule
       $pos = Schedule::Pos.new.pos
       sos.each do |so_num|
         so = SalesOrder.new(so_num.to_i)
-        next so.skip_message if so.skip
+        next if so.skip
         schedule_so = ScheduleSO.new(so)
         schedule_so.print_to_console
         if schedule_so.exists?
           schedule_so.warn_exists
           next unless ($opts.debug || $opts.test)
         end
+        puts ''
         schedule_so.push
       end
     end

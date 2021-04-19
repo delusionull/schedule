@@ -66,15 +66,36 @@ module Schedule
     end
 
     def skip
-      if @so_qry_lines.count < 1
+      if skip_not_found || skip_lines_not_conseq
         true
       else
         false
       end
     end
 
-    def skip_message
-      puts "Skipping #{@so_num}"
+    private
+
+    def skip_not_found
+      if @so_qry_lines.count < 1
+        puts "Skipping #{@so_num}. Order not found in Infor DB".white.on_red
+        return true
+      else
+        return false
+      end
+    end
+
+    def skip_lines_not_conseq
+      if non_conseq(@so_qry_lines)
+        puts "Skipping #{@so_num}. Order lines are not consequtive".white.on_red
+        return true
+      else
+        return false
+      end
+    end
+
+    def non_conseq(lns)
+      ln_nos = lns.map{|x| x[:ord_line_num]}.uniq
+      ln_nos.max === ln_nos.length ? false : true
     end
   end
 end

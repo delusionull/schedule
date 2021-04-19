@@ -2,6 +2,7 @@
 
 $stdout.sync = true
 require 'awesome_print'
+require 'colorize'
 require_relative '../lib/schedule/runner'
 
 runner = Schedule::Runner.new()

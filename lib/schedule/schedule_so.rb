@@ -14,7 +14,7 @@ module Schedule
     end
 
     def warn_exists
-      puts "Sales Order #{@so.so_num} already exists in the scheduling database."
+      puts "Sales Order #{@so.so_num} already exists in the scheduling database.".white.on_red
     end
 
     def push
@@ -25,18 +25,21 @@ module Schedule
 
     def print_header(so)
       print "\n" if SalesOrder.iteration > 1
-      puts "------!> #{so.so_num} for #{so.ship_to_name} " +
-           "(#{so.customer_po_num}) shipping #{so.requested_ship_date}"
+      puts "------!> #{so.so_num} ".yellow +
+           "for #{so.ship_to_name} ".green +
+           "(#{so.customer_po_num}) shipping ".green +
+           "#{so.requested_ship_date}".yellow +
+           ($opts.test ? "     " + "!!TEST RUN ONLY!!".white.on_red : "")
     end
 
     def print_lines(so)
       so.layup_lines.lines.each do |ln|
-        puts "           #{ln.part_num}" +
-             " #{Schedule::Constants::SIZE[ln.size][:inches]}, " +
-             "#{ln.qty}, #{ln.face.code} (#{ln.face.bin} - #{ln.face.qty_on_hand}), " +
-             "#{ln.back.code} (#{ln.back.bin} - #{ln.back.qty_on_hand}), " +
-             "#{ln.thick}, " +
-             "#{ln.core.codes*' + '}"
+        puts "           #{ln.part_num} ".cyan +
+          "#{Schedule::Constants::SIZE[ln.size][:inches]}, ".cyan +
+          "#{ln.qty}, #{ln.face.code} (#{ln.face.bin} - #{ln.face.qty_on_hand}), ".cyan +
+          "#{ln.back.code} (#{ln.back.bin} - #{ln.back.qty_on_hand}), ".cyan +
+          "#{ln.thick}, ".cyan +
+          "#{ln.core.codes*' + '}".cyan
       end
     end
 

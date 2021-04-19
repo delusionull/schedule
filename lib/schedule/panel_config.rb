@@ -38,7 +38,8 @@ module Schedule
     end
 
     def customer_core
-      @pn_info[:core] == 'ZZ' || @pn_info[:core] == 'CUST'
+      @pn_info[:core] == 'ZZ' ||
+      @pn_info[:core] == 'CUST'
     end
 
     def core_last_line

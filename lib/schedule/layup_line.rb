@@ -77,7 +77,7 @@ module Schedule
     end
 
     def pn_info
-      ap @part_num
+      #ap @part_num
       return afi_pn_info if @part_num[0..1] == '0-'
       return cust_pn_info if /CUST/.match(@part_num)
       /
