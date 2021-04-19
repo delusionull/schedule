@@ -21,7 +21,6 @@ module Schedule
 
     def wt_num
       @lines[0][:wt_num].to_i
-      #(@lines[0][:wt_num].to_s + @lines[0][:wt_suffix].to_s.rjust(2, "0")).to_i
     end
 
     def qty
@@ -37,9 +36,7 @@ module Schedule
     end
 
     def size
-      size = @pn_info[:size]
-      #raise "No panel size info found. Check FG part number." unless size
-      return size
+      @pn_info[:size]
     end
 
     def core

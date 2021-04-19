@@ -13,7 +13,7 @@ module Schedule
         opt :test, "Test run only; don't commit changes."
         opt :all_sales_orders, "Process all sales orders which are ready."
         opt :sales_orders, "Sales orders to process.", { :type => :strings }
-        opt :debug, "(not implemented)\nRun in debug mode; display helpful output.     "
+        opt :debug, "Run in debug mode; display helpful output.     "
         opt :verbosity,
           "(not implemented)\nVerbosity of output:\n" +
           "  0 (none)\n  1 (normal)\n  2 (verbose)\n  3 (very verbose)\n",

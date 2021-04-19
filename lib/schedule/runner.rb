@@ -48,8 +48,8 @@ module Schedule
     end
 
     def get_so_nums
-      #$sos.map { |x| x[:sales_order] }.uniq
-      $opts.sos
+      $opts.all_sos ? $sos.map { |x| x[:sales_order] }.uniq : $opts.sos
+      end
     end
   end
 end
