@@ -14,7 +14,7 @@ module Schedule
     end
 
     def warn_exists
-      puts "Sales Order #{@so.so_num} already exists in the scheduling database.".white.on_red
+      puts "Sales Order #{@so.so_num} already exists in the scheduling database.".white.on_red.bold
     end
 
     def push
@@ -25,11 +25,11 @@ module Schedule
 
     def print_header(so)
       print "\n" if SalesOrder.iteration > 1
-      puts "------!> #{so.so_num} ".yellow +
+      puts "------!> #{so.so_num} ".yellow.bold +
            "for #{so.ship_to_name} ".green +
            "(#{so.customer_po_num}) shipping ".green +
            "#{so.requested_ship_date}".yellow +
-           ($opts.test ? "     " + "!!TEST RUN ONLY!!".white.on_red : "")
+           ($opts.test ? "     " + "!!TEST RUN ONLY!!".white.on_red.bold : "")
     end
 
     def print_lines(so)
@@ -55,11 +55,11 @@ module Schedule
       so.layup_lines.lines.each do |ln|
         shaz_size = Schedule::Constants::SIZE[ln.size][:shazam]
         shaz_comp, shaz_exclude = 0, 0
-        shaz_comment = ln.line_num.to_s + ln.face.instructions + ln.core.instructions  # add instructions for fire rated glue, etc
+        shaz_comment = ln.line_num.to_s + ln.face.instructions + ln.core.instructions
         shaz_line = "L#{ln.line_num.to_i.to_s.rjust(3, '0')}"
         po_face = ''
         po_back = ''
-        po_date = if (ln.face.po.date || ln.back.po.date)
+        po_date = if ln.face.po.date || ln.back.po.date
                     "\##{[ln.face.po.date.to_s, ln.back.po.date.to_s].max}\#"
                   else
                     'NULL'

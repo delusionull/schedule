@@ -6,7 +6,8 @@ module Schedule
     end
 
     def codes
-      return ['CUSTOMER CORE'] if @panel_config.customer_core
+      return ['CUSTOMER CORE'] if @panel_config.customer_core &&
+                                  @panel_config.core_last_line == 0
       c = get_codes(@lines, @panel_config)
       c.empty? ? ["No core. Check core codes."] : c
     end
@@ -36,6 +37,7 @@ module Schedule
       text << " *GLUE #{codes*' + '} CORES TOGETHER*" if codes.count > 1
       text << " *USE FIRE RATED GLUE*" if @panel_config.frglue
       text << " *USE METAL GLUE*" if @panel_config.metalglue
+      text << " cust core" if @panel_config.customer_core
       return text
     end
   end

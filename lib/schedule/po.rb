@@ -21,7 +21,7 @@ module Schedule
     private
 
     def not_laminate
-      (@pc == 'ILSH' || @pc == 'BKSH' || @pc == 'LALN' || @pc == 'LARB' || @pc == '')
+      ['ILSH', 'BKSH', 'LALN', 'LARB', ''].include?(@pc)
     end
   end
 end

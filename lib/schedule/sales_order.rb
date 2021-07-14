@@ -66,30 +66,27 @@ module Schedule
     end
 
     def skip
-      if skip_not_found || skip_lines_not_conseq
-        true
-      else
-        false
-      end
+      ( skip_not_found || skip_lines_not_conseq ) ? true : false
     end
 
     private
 
     def skip_not_found
       if @so_qry_lines.count < 1
-        puts "Skipping #{@so_num}. Order not found in Infor DB".white.on_red
-        return true
+        puts "Skipping #{@so_num}. Order not found in Infor DB".white.on_red.bold
+        true
       else
-        return false
+        false
       end
     end
 
     def skip_lines_not_conseq
       if non_conseq(@so_qry_lines)
-        puts "Skipping #{@so_num}. Order lines are not consequtive".white.on_red
-        return true
+        ap @so_qry_lines if $opts.debug
+        puts "Skipping #{@so_num}. Order lines are not consecutive".white.on_red.bold
+        true
       else
-        return false
+        false
       end
     end
 

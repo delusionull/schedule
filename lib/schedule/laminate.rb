@@ -27,7 +27,7 @@ module Schedule
     end
 
     def po
-      Schedule::Po.new(get_wonum, code, prodcat)  # material_code will be passed in here
+      Schedule::Po.new(wonum, code, prodcat)  # material_code will be passed in here
     end
 
     def prodcat
@@ -57,7 +57,7 @@ module Schedule
       @panel_config.core_last_line + (@panel_config.facedown || @panel_config.g2s ? 1 : 2)
     end
 
-    def get_wonum
+    def wonum
       if @lines[0][:wo_num] > 0
         @lines[0][:wo_num]
       elsif @lines[0][:wt_num] > 0
