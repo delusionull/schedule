@@ -55,7 +55,7 @@ module Schedule
       so.layup_lines.lines.each do |ln|
         shaz_size = Schedule::Constants::SIZE[ln.size][:shazam]
         shaz_comp, shaz_exclude = 0, 0
-        shaz_comment = ln.line_num.to_s + ln.face.instructions + ln.core.instructions
+        shaz_comment = ln.line_num.to_s + '.' + ln.face.instructions + ln.core.instructions
         shaz_line = "L#{ln.line_num.to_i.to_s.rjust(3, '0')}"
         po_face = ''
         po_back = ''
